@@ -11,6 +11,7 @@ __sets = {}
 
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
+from datasets.json_list import json_list
 import numpy as np
 
 # Set up voc_<year>_<split> using selective search "fast" mode
@@ -34,6 +35,9 @@ for year in ['2015']:
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
+    if name[-5:] == '.json':
+        return json_list(name)
+
     if not __sets.has_key(name):
         raise KeyError('Unknown dataset: {}'.format(name))
     return __sets[name]()
