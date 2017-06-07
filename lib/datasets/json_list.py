@@ -57,6 +57,9 @@ class json_list(imdb):
                 if len(items) == 2:
                     self._image_paths.append(items[0])
                     self._json_lines.append(items[1])
+            if len(self._image_paths) % 2 == 1:
+                self._image_paths = self._image_paths[:-1]
+                self._json_lines = self._json_lines[:-1]
             self._image_index = range(len(self._json_lines))
 
     def image_path_at(self, i):
