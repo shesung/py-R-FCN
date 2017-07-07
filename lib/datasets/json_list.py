@@ -54,7 +54,7 @@ class json_list(imdb):
         with open(self.list_file) as f:
             for line in f.readlines()[1:]:
                 items = line.strip().split('\t')
-                if len(items) == 2:
+                if len(items) >= 2:
                     self._image_paths.append(items[0])
                     self._json_lines.append(items[1])
             if len(self._image_paths) % 2 == 1:
