@@ -107,9 +107,12 @@ class json_list(imdb):
             x2 = float(obj['xmax'])
             y2 = float(obj['ymax'])
             cls = int(obj['name']) + 1
+            if cls >= len(self._classes):
+                cls = 0
             boxes[ix, :] = [x1, y1, x2, y2]
             gt_classes[ix] = cls
-            overlaps[ix, cls] = 1.0
+            if cls >0:
+                overlaps[ix, cls] = 1.0
             seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
 
         overlaps = scipy.sparse.csr_matrix(overlaps)

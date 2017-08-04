@@ -13,7 +13,7 @@ from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
 
-DEBUG = False
+DEBUG = True
 
 class ProposalTargetLayer(caffe.Layer):
     """
@@ -36,6 +36,11 @@ class ProposalTargetLayer(caffe.Layer):
         # bbox_outside_weights
         top[4].reshape(1, self._num_classes * 4, 1, 1)
 
+        if DEBUG:
+            self._count = 0
+            self._fg_num = 0
+            self._bg_num = 0
+
     def forward(self, bottom, top):
         # Proposal ROIs (0, x1, y1, x2, y2) coming from RPN
         # (i.e., rpn.proposal_layer.ProposalLayer), or any other source
@@ -55,7 +60,7 @@ class ProposalTargetLayer(caffe.Layer):
         assert np.all(all_rois[:, 0] == 0), \
                 'Only single item batches are supported'
 
-        rois_per_image = np.inf if cfg.TRAIN.BATCH_SIZE == -1 else cfg.TRAIN.BATCH_SIZE
+        rois_per_image = 1000000 if cfg.TRAIN.BATCH_SIZE == -1 else cfg.TRAIN.BATCH_SIZE
         fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image).astype(np.int)
 
         # Sample rois with classification labels and bounding box regression
@@ -66,13 +71,13 @@ class ProposalTargetLayer(caffe.Layer):
             rois_per_image, self._num_classes)
 
         if DEBUG:
-            print 'num fg: {}'.format((labels > 0).sum())
-            print 'num bg: {}'.format((labels == 0).sum())
+            print 'num fg: {}'.format((labels > 0).sum()),
+            print 'num bg: {}'.format((labels == 0).sum()),
             self._count += 1
             self._fg_num += (labels > 0).sum()
             self._bg_num += (labels == 0).sum()
-            print 'num fg avg: {}'.format(self._fg_num / self._count)
-            print 'num bg avg: {}'.format(self._bg_num / self._count)
+            print 'num fg avg: {}'.format(self._fg_num / self._count),
+            print 'num bg avg: {}'.format(self._bg_num / self._count),
             print 'ratio: {:.3f}'.format(float(self._fg_num) / float(self._bg_num))
 
         # sampled rois

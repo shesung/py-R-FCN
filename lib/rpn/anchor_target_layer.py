@@ -146,7 +146,8 @@ class AnchorTargetLayer(caffe.Layer):
             labels[max_overlaps < cfg.TRAIN.RPN_NEGATIVE_OVERLAP] = 0
 
         # fg label: for each gt, anchor with highest overlap
-        labels[gt_argmax_overlaps] = 1
+        if np.amax(gt_max_overlaps) > 0.01:
+            labels[gt_argmax_overlaps] = 1
 
         # fg label: above threshold IOU
         labels[max_overlaps >= cfg.TRAIN.RPN_POSITIVE_OVERLAP] = 1
