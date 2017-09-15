@@ -31,6 +31,9 @@ class json_list(imdb):
             json_config = json.loads(f.read())
             self._classes = [str(c) for c in range(json_config['num_labels'] + 1)]
             self.list_file = json_config['fileListJSON']
+            inflated_list = os.path.join(json_config['batches_dir'], 'inflated_list.json')
+            if os.path.exists(inflated_list):
+                self.list_file = inflated_list
             self.json_file = json_file
 
         cfg.DATA_DIR = os.path.dirname(self.json_file)
